@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Game</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/bbdccb4e58.js" crossorigin="anonymous"></script>  
+</head>
+
+ <style>             
+    body{
+        font-size: 20px;
+        font-family: sans-serif;
+        height: 100vh;
+        margin: 0 auto;
+        text-align: center;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        background-image : url(White_Background.jpg)
+    }
+
+    .statusBar{
+        padding: 15px;
+        background: #ffffff;
+        color: #ffffff;
+    }
+    h1{
+        font-size: 28px;
+        padding: 10px;
+    }
+    .bar{
+        padding: 15px;
+        background:  #03a9f4;
+        color: #ffffff;
+        box-shadow: 0px 0px 10px grey;
+    }
+    p{
+        display: inline-block;
+    }
+    #score, #time{
+        color: white;
+        background: red;
+        padding: 7px 15px 8px 15px;
+        margin-left: 5px;
+        border-bottom-right-radius: 10px;
+    }
+
+    h3{
+        font-size: 21px;
+        display: inline-block;
+        margin-top: 1px;
+        background: black;
+        padding: 7px 0px 7px 15px;
+        border-radius: 10px;
+        border-bottom-left-radius: 0px;
+        margin-right: 10px;
+    }
+
+    p, .form-control{
+        font-size: 20px;
+    }
+    textarea{
+        padding: 10px;
+        height: 180px;
+        border: 3px solid rgb(122, 183, 251)!important;
+  
+    }
+     #tryAgain {
+         display: none;
+     }
+
+     .alert{
+         margin: 0px;
+     }
+    #gameStatus{
+        display: none;
+    }
+
+</style>
+
+<body oncontextmenu="return true">
+    <div class = "alert alert-warning" role="alert" style="font-size: 20px;">
+        <span id="timeInterval">Hello, Good Afternoon </span>
+        <button class = "btn btn-outline-warning" id="show" onclick="popUp()">User</button>
+    </div>
+    <div class="bar">
+        <h1>Typing Game</h1>
+    </div>
+
+    <h3>
+        <span style="color: white;">Score</span>
+        <span id="score">0</span>
+
+        <span style="color: white;">Time</span>
+        <span id="time"></span>
+        <br>
+    </h3>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto text-center">
+            <p id="random" class="mt-5" 
+            oncopy="return false"></p>
+            <button class="btn btn-outline-primary mb-3" id="skip" onclick="skip()">Skip</button> 
+            <button class="btn btn-outline-primary mb-3" id="tryAgain">Try Again</button> 
+            
+            <textarea onpaste="return false" id="typedWord" placeholder="Type the above sentence." 
+            class="form-control mt-3"></textarea>
+        </div>
+    </div>
+</div>
+
+
+
+
+ 
+
+</body>
+
+<script>
+    let showWord = document.querySelector("#random");
+    let typeWord = document.querySelector("#typeWord");
+  //  let tryAgain = document.querySelector("#tryAgain");
+    let url = "https://game-of-thrones-quotes.herokuapp.com/v1/random/5";
+    let randomWord = "";
+
+
+
+    getWord()
+    async function getWord(){
+        let response = await fetch(url);
+        let data = await response.json();
+        randomWord = data[0].sentence;
+        showWord.innerHTML = randomWord;
+        store();
+    }
+
+
+    let score = 0 ;
+        let scoreValue = document.querySelector("#score");
+
+
+    typedWord.addEventListener("keyup", event => {
+    if(typedWord.value === randomWord){
+        getWord();
+
+        event.target.value = "";
+
+
+
+    score ++;
+    scoreValue.innerHTML = score;
+    let number = [1,2,3,4,5,6,7,8,9,10];
+    let randomValue = Math.floor(Math.random()* number.length);
+    time += number [randomValue];
+    store();
+    if(score >= 5){
+        gameWin();
+    }
+     updateTime();
+    }store();
+})
+
+
+
+localStorage.setItem("storedScore", score);
+let storedScore = document.querySelector("#storedScore");
+
+
+function getStored(){
+if(storedScore){
+    scoreValue.innerHTML = storedScore;
+}else{
+    scoreValue.innerHTML= 0;
+}    
+}
+
+function skip(){
+getWord();
+}
+
+
+
+
+
+let time = 30 ;
+
+
+function updateTime(){
+    time -- ;
+    let displayTime = document.getElementById("time");
+    displayTime.innerHTML = time + "s";
+
+    if(time == 0){
+    gameOver();
+    clearInterval(counter);
+  }
+}
+
+
+
+
+let data = new Date();
+let hours = data.getHours();
+let timeInterval = document.getElementById("timeInterval");
+
+if(hours >= 1 && hours <=5){
+    timeInterval.innerHTML = "Hello, Early Morning";
+}else if(hours >= 6 && hours < 12){
+    timeInterval.innerHTML = "Hello, Good Morning";
+}else if(hours >= 12 && hours <= 14){
+    timeInterval.innerHTML = "Hello, Good Afternoon";
+}else if(hours >= 15 && hours <= 18){
+    timeInterval.innerHTML = "Hello, Good Evening";
+}else if(hours >= 19 && hours <=24 || hours == 0){
+    timeInterval.innerHTML = "Hello, Good Night";
+}else {
+    timeInterval.innerHTML = "Hello! Warmly Welcome";
+}
+
+
+
+
+let showUser = document.querySelector("#show");
+function popUp(){
+    let username = prompt("What is your name?")
+    localStorage.setItem("storedUser", username);
+    showUser.innerHTML = username;
+}
+
+
+
+let storedUser = localStorage.getItem("storedUser");
+if(storedUser){
+    showUser.innerHTML= storedUser;
+}else{
+    showUser.innerHTML = "User";
+}
+
+
+
+
+let counter = setInterval(updateTime, 1000);
+let skipButton = document.querySelector("#skip");
+let tryAgain = document.querySelector("#tryAgain");
+
+
+
+function gameOver() {
+    showWord.innerHTML = "Time Ran Out!!";
+    typedWord.style.display = "none";
+    skipButton.style.display = "none";
+    tryAgain.style.display = "inline-block";
+}
+
+
+
+tryAgain.addEventListener("click", () => {
+    window.location.reload();
+    tryAgain.style.display = "none";
+})
+
+
+
+let gamewin = document.querySelector("#gamewin");
+function gameWin(){
+    clearInterval(counter);
+    showWord.style.display = "none";
+    gamewin.innerHTML = "You won the game!!";
+    typedWord.style.display = "none";
+    tryAgain.style.display = "inline-block";
+}
+
+
+ 
+function store(){
+    localStorage.setItem("gameScore" , score);
+    localStorage.setItem("gameTime", time);
+    localStorage.setItem("randomWord" , showWord.innerHTML);
+    localStorage.setItem("userWord", typedWord.value);
+}
+
+
+
+</script>
+</html>
